@@ -1,0 +1,13 @@
+---
+description: Fuse demo rules
+alwaysApply: true
+---
+
+The demo must begin with the problem, show a real or honestly labeled simulated
+failure, show the policy, show the blocked next invocation, show persisted
+evidence, show recovery or replay, and show a normal successful run. Keep the story
+under three minutes. Do not show planned services as implemented.
+
+Public demo: synthetic invoice data only, allowlisted scenarios, no arbitrary
+prompts or tools. Label estimated cost as estimated. Distinguish enforcement from
+monitoring, and blocked-next-call from cancellation.

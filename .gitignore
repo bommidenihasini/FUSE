@@ -1,0 +1,17 @@
+node_modules
+.env
+.env.*
+!.env.example
+dist
+build
+cdk.out
+coverage
+.DS_Store
+*.log
+.turbo
+.pnpm-store
+playwright-report
+test-results
+.aws-sam
+.amplify
+.vscode/*.log

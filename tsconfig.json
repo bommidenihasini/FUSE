@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noImplicitAny": true,
+    "noUncheckedIndexedAccess": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "verbatimModuleSyntax": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "@fuse/contracts": ["packages/contracts/src/index.ts"],
+      "@fuse/test-fixtures": ["packages/test-fixtures/src/index.ts"],
+      "@fuse/policy-engine": ["packages/policy-engine/src/index.ts"],
+      "@fuse/persistence": ["packages/persistence/src/index.ts"]
+    }
+  },
+  "include": ["packages/**/*.ts", "vitest.config.ts", "infra/bin/**/*.ts", "infra/lib/**/*.ts"]
+}

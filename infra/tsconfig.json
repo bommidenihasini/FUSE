@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "lib": ["ES2022"],
+    "strict": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "noEmit": false,
+    "outDir": "dist",
+    "rootDir": ".",
+    "declaration": false,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": ["node"]
+  },
+  "include": ["bin/**/*.ts", "lib/**/*.ts"],
+  "exclude": ["lib/**/*.test.ts", "dist", "cdk.out"]
+}

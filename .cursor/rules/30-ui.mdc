@@ -1,0 +1,19 @@
+---
+description: Fuse UI system
+globs: apps/dashboard/**
+alwaysApply: true
+---
+
+Build a serious AI operations control room, not a generic admin template. Use
+Tailwind, shadcn/ui, Radix primitives, Motion for deliberate transitions, Lucide
+icons, Recharts, and TanStack Query.
+
+Palette: background #0B0D12, panels #121722, text #F4F1EA, muted #8D96A8, active
+#55D6FF, running #FFB84D, completed #63E6BE, breaker #FF6B6B.
+
+Use Space Grotesk or Sora for headings, Inter or IBM Plex Sans for body text, and
+JetBrains Mono for IDs and event data. Make status, policy, reason, and blocked-call
+evidence visible. Respect keyboard focus and reduced-motion preferences.
+
+The landing page is an invitation; the dashboard is the product proof. Do not
+hard-code live counters. Breaker copy must say “Next invocation blocked.”

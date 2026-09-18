@@ -1,0 +1,9 @@
+{
+  "app": "node dist/bin/app.js",
+  "output": "cdk.out",
+  "context": {
+    "fuse:stackName": "FuseMvp",
+    "fuse:awsRegion": "<development-region>",
+    "fuse:bedrockModelId": "<approved-model-id>"
+  }
+}

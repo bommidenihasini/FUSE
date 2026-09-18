@@ -1,0 +1,14 @@
+---
+description: Fuse security and public-demo rules
+globs: apps/**,infra/**
+alwaysApply: true
+---
+
+The public demo may run only allowlisted synthetic scenarios and tools. Never
+accept arbitrary code, arbitrary URLs, arbitrary tool definitions, or unbounded
+prompts. Do not expose AWS credentials or secrets in frontend code. Validate all
+input on the server with Zod. Use least-privilege IAM. Apply run duration, step,
+concurrency, and rate limits.
+
+If Bedrock is unavailable, show an honest failure and offer simulation mode. Never
+present a pre-recorded run as a live Bedrock run.

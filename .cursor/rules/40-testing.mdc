@@ -1,0 +1,12 @@
+---
+description: Fuse testing rules
+alwaysApply: true
+---
+
+Every policy and state transition must have unit tests. Add integration tests
+proving a denied decision prevents the underlying tool from executing. Add API
+tests for idempotency, invalid policy input, replay immutability, and ordered event
+writes. Add Playwright tests for start, breaker trip, timeline inspection, policy
+update, safe completion, reset, and Bedrock failure fallback.
+
+Never mark a feature complete without a test or reproducible verification.

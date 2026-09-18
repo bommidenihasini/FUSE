@@ -1,0 +1,35 @@
+{
+  "name": "fuse",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Fuse — circuit breaker for autonomous AI agents (hackathon prototype)",
+  "type": "module",
+  "packageManager": "pnpm@11.7.0",
+  "engines": {
+    "node": ">=22 <23",
+    "pnpm": ">=9"
+  },
+  "scripts": {
+    "engine-check": "node -e \"const M=process.versions.node.split('.')[0]; if(M!=='22'){console.warn('Fuse targets Node.js 22.x; current is '+process.versions.node+'. Do not use Node 24-only APIs.'); process.exitCode=0;}\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p infra/tsconfig.json --noEmit",
+    "test": "vitest run",
+    "infra:synth": "pnpm --filter @fuse/infra synth"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.6.1",
+    "eslint": "^10.10.0",
+    "prettier": "^3.9.7",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.70.0",
+    "vitest": "^5.0.1"
+  }
+}

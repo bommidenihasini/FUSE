@@ -1,0 +1,19 @@
+---
+description: Fuse project-wide rules
+alwaysApply: true
+---
+
+You are implementing Fuse, a hackathon prototype that proves one behavior: a
+Bedrock-powered integrated agent can be stopped before its next model/tool
+invocation after a policy violation.
+
+Do not expand scope without explicit approval. Do not replace backend state with
+frontend-only animation. Do not use real financial or personal data. Do not claim
+exact billing, universal framework support, arbitrary-agent interception, or
+cancellation of every already-running request.
+
+Every changed behavior requires a test. Every user-visible claim must be supported
+by an implemented behavior or labeled as a limitation. Prefer small typed modules,
+explicit errors, deterministic fixtures, and least-privilege AWS permissions.
+
+Work only in the current checkpoint. Stop when the checkpoint says STOP.

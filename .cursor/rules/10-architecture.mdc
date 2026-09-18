@@ -1,0 +1,16 @@
+---
+description: Fuse architecture and backend rules
+globs: apps/api/**,apps/runner/**,packages/**,infra/**
+alwaysApply: true
+---
+
+Use TypeScript, AWS SDK v3, Amazon Bedrock Converse API with tool use, Lambda, API
+Gateway HTTP API, DynamoDB, EventBridge, and CloudWatch. All model and tool calls
+must pass through beforeCall. A denied call must not execute the underlying call.
+
+Use typed contracts for Policy, Run, Event, BeforeCallInput, and PolicyDecision.
+Preserve immutable original runs during replay. Use idempotency keys for run
+creation and conditional writes for event ordering.
+
+Fail closed when the policy decision or required audit write cannot be trusted.
+Label all cost values as estimates. Choose CDK or SAM, never both.
