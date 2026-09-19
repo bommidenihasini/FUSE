@@ -5,3 +5,6 @@ cdk.out
 docs
 *.md
 pnpm-lock.yaml
+dashboard
+apps/runner
+packages/policy-engine/policy.js

@@ -1,0 +1,133 @@
+@import "tailwindcss";
+
+@theme {
+  --color-bg: #060912;
+  --color-bg-deep: #060912;
+  --color-bg-subtle: #080D18;
+  --color-panel: #0D1626;
+  --color-panel-2: #111D31;
+  --color-elevated: #15243A;
+  --color-text: #F5F9FF;
+  --color-text-secondary: #B8C5D9;
+  --color-muted: #7F91AA;
+  --color-disabled: #526278;
+  --color-active: #58D9FF;
+  --color-active-deep: #1798C5;
+  --color-running: #FFB84D;
+  --color-completed: #43E0A4;
+  --color-breaker: #FF6B6B;
+  --color-breaker-deep: #D9485F;
+  --color-info: #9D8CFF;
+  --color-border: rgba(148, 163, 184, 0.16);
+  --color-border-strong: rgba(148, 163, 184, 0.28);
+  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
+  --font-display: "Sora", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-pixel: "Pixelify Sans", "Silkscreen", monospace;
+  --radius-panel: 12px;
+  --radius-control: 8px;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  background:
+    radial-gradient(circle at 70% 20%, rgba(88, 217, 255, 0.16) 0%, transparent 42%),
+    radial-gradient(circle at 15% 85%, rgba(13, 22, 38, 0.8) 0%, transparent 45%),
+    #060912;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+
+body::before {
+  content: "";
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  opacity: 0.05;
+  background-image:
+    linear-gradient(rgba(88, 217, 255, 0.2) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(88, 217, 255, 0.2) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(circle at 50% 20%, black, transparent 80%);
+}
+
+h1,
+h2,
+h3,
+.font-display {
+  font-family: var(--font-display);
+}
+
+code,
+.font-mono,
+kbd {
+  font-family: var(--font-mono);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-active);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* 5-second Hero Circuit Animation Keyframes */
+@keyframes circuit-signal {
+  0% {
+    stroke-dashoffset: 320;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  50% {
+    stroke-dashoffset: 0;
+    stroke: #58D9FF;
+  }
+  75% {
+    stroke-dashoffset: 0;
+    stroke: #FF6B6B;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    stroke: #FF6B6B;
+    opacity: 1;
+  }
+}
+
+@keyframes breaker-soft-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(255, 107, 107, 0);
+  }
+  50% {
+    box-shadow: 0 0 24px 2px rgba(255, 107, 107, 0.35);
+  }
+}
+
+.breaker-pulse {
+  animation: breaker-soft-pulse 2s ease-in-out 1;
+}
+
+.circuit-signal-path {
+  stroke-dasharray: 320;
+  animation: circuit-signal 4.2s ease-out 0.3s forwards;
+}

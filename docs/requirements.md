@@ -48,7 +48,7 @@ Pure evaluator: `evaluateBeforeCall` in `@fuse/policy-engine`. Caller supplies `
 7. Normalize the next action. If that fails → `UNSUPPORTED_ACTION_ARGUMENTS`.
 8. Repeats: matching signatures + this call `> maxRepeatedActionCount` → `MAX_REPEATED_ACTION_EXCEEDED`.
 9. Else allow.
-10. Persistence of `POLICY_BLOCKED` / EventBridge happens in later checkpoints, not in this engine.
+10. C1.6 wrapper persists `POLICY_EVALUATED` / `POLICY_BLOCKED` / `BREAKER_TRIPPED` and must not execute the denied call. Live EventBridge `PutEvents` is still later.
 
 ## Typed contracts
 
@@ -58,14 +58,17 @@ Canonical TypeScript types live in `packages/contracts/src/`. C1.3 added `INVALI
 
 `RUN_CREATED`, `RUN_STARTED`, `MODEL_CALL_ALLOWED`, `MODEL_CALL_COMPLETED`, `TOOL_CALL_ALLOWED`, `TOOL_CALL_COMPLETED`, `TOOL_CALL_FAILED`, `POLICY_EVALUATED`, `POLICY_BLOCKED`, `BREAKER_TRIPPED`, `RUN_COMPLETED`, `RUN_FAILED`.
 
-## API (implemented later)
+## API (C2.0 local synthetic control plane)
 
-- `POST /runs` — idempotency key required; body `{ scenario, policyId }`
+Implemented in `@fuse/api` (in-memory repository + synthetic runner). **Not** live Bedrock. **Not** a fully deployed API Gateway control plane.
+
+- `GET /health` — `{ ok, service: "fuse-api", mode: "synthetic", liveBedrock: false }`
+- `POST /runs` — `Idempotency-Key` required; Zod body `{ scenario, policyId }`
 - `GET /runs/{runId}`
 - `GET /runs/{runId}/events` — ordered by sequence
-- `POST /runs/{runId}/reset` — demo state only
-- `POST /runs/{runId}/replay` — new run from snapshot + selected policy
-- `GET /policies`, `POST /policies`, `PATCH /policies/{policyId}` — Zod; existing runs keep snapshots
+- `GET /policies` — allowlisted demo policies
+
+Not in this checkpoint: `POST /runs/{runId}/reset`, `POST /runs/{runId}/replay`, `POST /policies`, `PATCH /policies/{policyId}`, frontend.
 
 ## Out of scope until core works
 

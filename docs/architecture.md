@@ -164,6 +164,18 @@ Lambda env: `BEDROCK_MODEL_ID=<approved-model-id>`, `FUSE_LIVE_BEDROCK=false`. `
 
 `@fuse/persistence` implements DynamoDB SDK v3 repositories against `FuseRuns` and `FuseEvents`. Policies are the run’s stored snapshot (`getPolicySnapshot`). No EventBridge publish, Bedrock, API, or deploy in this layer. Timestamps are caller-supplied; run IDs are server-generated.
 
+## Enforcement wrapper (C1.6)
+
+`@fuse/enforcement` (`Fuse.beforeCall` / `afterCall` / `tripBreaker` / `invokeTool` / `invokeModel`) evaluates each next call, persists the ledger, and **does not invoke** the supplied function when denied. Clock and EventBridge-shaped notices are injected. No runner, API, Bedrock client, or `cdk deploy` in this package.
+
+## Synthetic runner (C1.7A)
+
+`@fuse/runner` (`InvoiceVerificationRunner`) drives the three allowlisted invoice scenarios through `Fuse.invokeModel` / `invokeTool`. It is **simulation only**: synthetic `simulate_invoice_planner` + `verify_vendor`, hard iteration cap, no Amazon Bedrock, no EventBridge, no API, no UI, no deploy.
+
+## HTTP API (C2.0)
+
+`@fuse/api` exposes `GET /health`, `POST /runs`, `GET /runs/{runId}`, `GET /runs/{runId}/events`, and `GET /policies` over the synthetic runner and an in-memory repository. Health always returns `mode: "synthetic"` and `liveBedrock: false`. Local listen: `pnpm api:dev`. CDK still deploys only `GET /health` as an inline Lambda until a bundled handler is deployed. No frontend. No live Bedrock. No EventBridge publish.
+
 ## CDK layout
 
 ```

@@ -14,14 +14,15 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint .",
-    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p infra/tsconfig.json --noEmit",
+    "typecheck": "tsc -p tsconfig.json --noEmit && tsc -p infra/tsconfig.json --noEmit && tsc -p apps/dashboard/tsconfig.json --noEmit",
     "test": "vitest run",
-    "infra:synth": "pnpm --filter @fuse/infra synth"
+    "build": "pnpm --filter @fuse/dashboard build",
+    "infra:synth": "pnpm --filter @fuse/infra synth",
+    "api:dev": "pnpm --filter @fuse/api start",
+    "ui:dev": "pnpm --filter @fuse/dashboard dev"
   },
   "pnpm": {
-    "ignoredBuiltDependencies": [
-      "esbuild"
-    ]
+    "ignoredBuiltDependencies": []
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

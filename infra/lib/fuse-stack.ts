@@ -21,10 +21,9 @@ exports.handler = async function () {
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify({
       ok: true,
-      service: 'fuse-control',
-      implemented: false,
-      liveBedrock: false,
-      message: 'Health only. Control API and runner are not implemented.'
+      service: 'fuse-api',
+      mode: 'synthetic',
+      liveBedrock: false
     })
   };
 };
@@ -148,7 +147,8 @@ export class FuseStack extends cdk.Stack {
 
     this.api = new apigwv2.HttpApi(this, "FuseHttpApi", {
       apiName: "fuse-http-api",
-      description: "Fuse HTTP API. C1.4 wires GET /health only.",
+      description:
+        "Fuse HTTP API. GET /health is wired. Full run API is @fuse/api (local, synthetic).",
     });
     this.api.addRoutes({
       path: "/health",

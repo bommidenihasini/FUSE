@@ -4,4 +4,4 @@ packages:
   - "infra"
 
 allowBuilds:
-  esbuild: false
+  esbuild: true

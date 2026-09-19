@@ -74,6 +74,14 @@ describe("FuseStack", () => {
     });
   });
 
+  test("health Lambda body is synthetic fuse-api, not live Bedrock", () => {
+    const json = JSON.stringify(template.toJSON());
+    expect(json).toContain("fuse-api");
+    expect(json).toContain("synthetic");
+    expect(json).toContain("liveBedrock: false");
+    expect(json).not.toContain("liveBedrock: true");
+  });
+
   test("uses Node.js 22 Lambda runtimes", () => {
     template.hasResourceProperties("AWS::Lambda::Function", {
       Runtime: "nodejs22.x",

@@ -34,7 +34,7 @@ Fuse is a hackathon prototype for **one integrated workflow**.
 - If DynamoDB audit writes fail: **fail closed**.
 - If EventBridge publish fails: audit should still remain; show a warning (not fake success).
 - If Bedrock is down: honest error + simulation option.
-- Region and model ID are **unverified** as of C0.2; live mode stays off until a human completes the architecture.md verification procedure.
+- **C1.7B external AWS blocker (not a Fuse bug):** IAM identity, Bedrock model listing, and `GetFoundationModel` succeeded in `us-east-1` for `amazon.nova-lite-v1:0`. **Converse** was refused because the AWS account is still being verified (`Your account is currently being verified.`). Keep `FUSE_LIVE_BEDROCK=false`. Keep the synthetic runner. Do not invent a successful live Bedrock run. Do not retry Converse in a loop while verification is pending.
 
 ## Infrastructure (C1.4)
 
@@ -48,3 +48,36 @@ Fuse is a hackathon prototype for **one integrated workflow**.
 - Repositories are tested against an in-memory store and a fake DynamoDB document client. They have **not** been run against a deployed table.
 - Terminal runs are immutable at the repository layer. Replay must create a new run (later checkpoint).
 - Event metadata redaction is key-name based, not secret scanning.
+
+## Enforcement wrapper (C1.6)
+
+- The wrapper does **not** call Amazon Bedrock. Tests inject fake model/tool functions.
+- The wrapper does **not** publish live EventBridge events. An optional hook may record a `BreakerTripped` notice; a hook failure must not unwind a persisted trip.
+- Fail closed applies to policy evaluation and required audit writes **before** the underlying call. A failure in `afterCall` cannot un-execute a call that already ran.
+- Fuse still does **not** cancel in-flight work outside this wrapper.
+
+## Synthetic runner (C1.7A)
+
+- The runner does **not** call Amazon Bedrock. The model step is `simulate_invoice_planner`.
+- The runner does **not** publish EventBridge events, expose HTTP APIs, or deploy AWS resources.
+- Only `verify_vendor` is allowlisted. No arbitrary URLs or tools.
+- A hard iteration cap (`HARD_RUNNER_SAFETY_CAP`) stops unbounded loops even if policy limits are raised.
+
+## Bedrock verification (C1.7B)
+
+- Live Bedrock Converse is **not** available yet. The blocker is AWS account verification, not Fuse policy, the runner, or a missing model ID in application code.
+- `FUSE_LIVE_BEDROCK` stays **false**. Simulation must remain labeled simulation.
+- Listing a foundation model is **not** the same as a successful Converse + tool-use invocation. Fuse must not claim a live Bedrock run from C1.7B.
+
+## HTTP API (C2.0)
+
+- The working control plane is the local `@fuse/api` process (in-memory store). It is **not** a claim that API Gateway currently serves `POST /runs` in AWS.
+- `liveBedrock` is always false. Do not call this a live Bedrock API.
+- Reset, replay, and policy mutation endpoints are not implemented.
+- No frontend in this checkpoint.
+
+## Frontend (C2.1–C2.6)
+
+- `apps/dashboard` is the product UI. It talks only to the synthetic local API. It does not call Bedrock and does not embed AWS credentials.
+- Recent runs are **sessionStorage**, not a list-runs API.
+- Policy editing and replay are not in the UI.

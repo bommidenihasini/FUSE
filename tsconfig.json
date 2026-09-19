@@ -19,7 +19,10 @@
       "@fuse/contracts": ["packages/contracts/src/index.ts"],
       "@fuse/test-fixtures": ["packages/test-fixtures/src/index.ts"],
       "@fuse/policy-engine": ["packages/policy-engine/src/index.ts"],
-      "@fuse/persistence": ["packages/persistence/src/index.ts"]
+      "@fuse/persistence": ["packages/persistence/src/index.ts"],
+      "@fuse/enforcement": ["packages/enforcement/src/index.ts"],
+      "@fuse/runner": ["packages/runner/src/index.ts"],
+      "@fuse/api": ["packages/api/src/index.ts"]
     }
   },
   "include": ["packages/**/*.ts", "vitest.config.ts", "infra/bin/**/*.ts", "infra/lib/**/*.ts"]

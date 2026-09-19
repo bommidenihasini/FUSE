@@ -72,3 +72,22 @@
 - No policy table. Snapshot lives on the run item.
 - No CDK change. No Date.now() in repositories.
 - pnpm workspace `allowBuilds.esbuild: false` so ignored esbuild scripts do not fail `pnpm test`.
+
+## 2026-09-19 — C1.6 enforcement wrapper
+
+- Package `@fuse/enforcement` with `Fuse` connecting contracts, `evaluateBeforeCall`, and `FuseRepository`.
+- Denied `invokeTool` / `invokeModel` never call the injected executor. Status becomes `BREAKER_TRIPPED`; `POLICY_BLOCKED` metadata records `nextInvocation: BLOCKED`.
+- EventBridge is an optional in-process hook (`fuse.breaker` / `BreakerTripped`), not AWS `PutEvents`.
+- No Bedrock runner, API handlers, frontend, or deploy.
+
+## 2026-09-19 — C1.7A synthetic runner
+
+- Package `@fuse/runner` with `InvoiceVerificationRunner` for the three synthetic invoice scenarios.
+- Loop and tool-error end in `BREAKER_TRIPPED`. Safe completion ends in `COMPLETED`. Safety cap ends in `FAILED`.
+- No Bedrock, EventBridge, API, UI, or `cdk deploy`.
+
+## 2026-09-19 — C2.0 minimal HTTP API
+
+- Package `@fuse/api` with Zod-validated health, create-run, get-run, events, and demo policies.
+- Always `liveBedrock: false` / `mode: synthetic`. Idempotency-Key on POST /runs. One in-flight demo run.
+- No frontend, no live Bedrock, no `cdk deploy` of the full run API. CDK `GET /health` JSON matches the local contract.
