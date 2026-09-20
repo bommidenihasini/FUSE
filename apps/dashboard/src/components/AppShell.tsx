@@ -76,8 +76,8 @@ export function AppShell() {
                 A
               </div>
               <div className="flex flex-col">
-                <span className="text-xs font-medium text-white leading-tight">Alex A.</span>
-                <span className="text-[10px] font-mono text-zinc-500">Fuse Admin</span>
+                <span className="text-xs font-medium text-white leading-tight">Fuse Operator</span>
+                <span className="text-[10px] font-mono text-zinc-500">Synthetic Session</span>
               </div>
             </div>
             <span className="w-2 h-2 rounded-full bg-[#10B981] animate-pulse" />
@@ -147,7 +147,7 @@ export function AppShell() {
                   <div className="w-7 h-7 rounded-full bg-zinc-700 flex items-center justify-center text-xs font-bold text-white">
                     A
                   </div>
-                  <div className="text-xs font-medium text-white">Alex A.</div>
+                  <div className="text-xs font-medium text-white">Fuse Operator</div>
                 </div>
               </div>
             </div>
