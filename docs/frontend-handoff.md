@@ -1,6 +1,6 @@
 # Frontend handoff
 
-Product UI lives in `apps/dashboard`. The teammate Vite stub in `/dashboard` is unused.
+Product UI lives in `apps/dashboard` (`pnpm ui:dev`). The leftover Vite stub in `/dashboard` starts `invoice-verification-loop` against the local API; it is not the full control room.
 
 ## Run locally
 
@@ -16,9 +16,9 @@ Terminal 2:
 pnpm ui:dev
 ```
 
-Open http://localhost:5173/
+Open the Vite URL, or after `pnpm aws:deploy` use the CloudFront `FuseDashboardUrl` output.
 
-Vite proxies `/health`, `/runs`, and `/policies` to `http://127.0.0.1:8787`.
+Vite proxies `/health`, `/runs`, and `/policies` to `http://127.0.0.1:8787`. The deployed CloudFront distribution uses the same paths against API Gateway.
 
 Optional: `apps/dashboard/.env` with `VITE_FUSE_API_URL=http://127.0.0.1:8787` for production-style absolute URLs.
 

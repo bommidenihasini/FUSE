@@ -12,9 +12,24 @@ A Bedrock-powered agent starts repeating model/tool calls; Fuse evaluates each n
 
 ## Status
 
-Day 0 checkpoints **C0.2–C0.4** complete (architecture, contracts, design tokens). No policy engine, runner, API, or UI yet.
+Local synthetic demo and AWS synthetic deploy are available. **Live Bedrock Converse is still off** (`FUSE_LIVE_BEDROCK=false`) until AWS account verification allows it.
 
-**Live AWS:** not verified. Region and Bedrock model remain placeholders.
+## Run locally
+
+```bash
+pnpm install
+pnpm api:dev
+pnpm ui:dev
+```
+
+## Deploy (synthetic, us-east-1, profile `fuse-dev`)
+
+```bash
+pnpm install
+pnpm aws:deploy
+```
+
+Uses `AWS_PROFILE=fuse-dev`. Outputs `FuseDashboardUrl` and `FuseApiUrl`. This is not a live Bedrock demo.
 
 ## Runtime
 

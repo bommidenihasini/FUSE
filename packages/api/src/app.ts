@@ -1,6 +1,6 @@
 import type { Policy, Run } from "@fuse/contracts";
 import { InMemoryFuseRepository, type FuseRepository } from "@fuse/persistence";
-import { InvoiceVerificationRunner } from "@fuse/runner";
+import { InvoiceVerificationRunner, type InvoiceVerificationRunnerOptions } from "@fuse/runner";
 import { SYNTHETIC_DATA_LABEL } from "@fuse/test-fixtures";
 import { getDemoPolicy, listDemoPolicies } from "./policies.js";
 import {
@@ -28,6 +28,7 @@ export interface FuseApiOptions {
   repository?: FuseRepository;
   nowIso?: () => string;
   createId?: () => string;
+  publishBreakerTripped?: InvoiceVerificationRunnerOptions["publishBreakerTripped"];
 }
 
 export interface FuseApi {
@@ -189,6 +190,7 @@ export function createFuseApi(options: FuseApiOptions = {}): FuseApi {
         repository,
         nowIso,
         policy,
+        publishBreakerTripped: options.publishBreakerTripped,
       });
       const result = await runner.run(parsedBody.scenario);
       idempotentRuns.set(keyParsed.data, result.run.runId);

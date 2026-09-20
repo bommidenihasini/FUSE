@@ -18,6 +18,7 @@
     "test": "vitest run",
     "build": "pnpm --filter @fuse/dashboard build",
     "infra:synth": "pnpm --filter @fuse/infra synth",
+    "aws:deploy": "pnpm --filter @fuse/dashboard build && pnpm --filter @fuse/infra deploy",
     "api:dev": "pnpm --filter @fuse/api start",
     "ui:dev": "pnpm --filter @fuse/dashboard dev"
   },

@@ -69,12 +69,12 @@ Fuse is a hackathon prototype for **one integrated workflow**.
 - `FUSE_LIVE_BEDROCK` stays **false**. Simulation must remain labeled simulation.
 - Listing a foundation model is **not** the same as a successful Converse + tool-use invocation. Fuse must not claim a live Bedrock run from C1.7B.
 
-## HTTP API (C2.0)
+## HTTP API (C2.0) and AWS deploy
 
-- The working control plane is the local `@fuse/api` process (in-memory store). It is **not** a claim that API Gateway currently serves `POST /runs` in AWS.
-- `liveBedrock` is always false. Do not call this a live Bedrock API.
+- Local `@fuse/api` still uses an in-memory store. The CDK stack deploys the same HTTP surface on API Gateway + Lambda with DynamoDB and EventBridge. `liveBedrock` remains **false**.
+- The public dashboard is served from CloudFront in front of a private S3 bucket (same-origin `/health`, `/runs`, `/policies`). This is not Amplify Hosting; Amplify would need a GitHub token we do not store in the repo.
 - Reset, replay, and policy mutation endpoints are not implemented.
-- No frontend in this checkpoint.
+- Live Bedrock Converse is still blocked by AWS account verification. The placeholder runner Lambda returns 501 and has no `bedrock:InvokeModel`.
 
 ## Frontend (C2.1–C2.6)
 

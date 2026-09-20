@@ -48,7 +48,11 @@ export class InvoiceVerificationRunner {
   constructor(options: InvoiceVerificationRunnerOptions) {
     this.repository = options.repository;
     this.nowIso = options.nowIso;
-    this.fuse = new Fuse({ repository: options.repository, nowIso: options.nowIso });
+    this.fuse = new Fuse({
+      repository: options.repository,
+      nowIso: options.nowIso,
+      publishBreakerTripped: options.publishBreakerTripped,
+    });
     this.policy = copyPolicy(options.policy ?? defaultDemoPolicy(options.nowIso()));
     this.safetyCap = resolveSafetyCap(options.safetyCap);
   }

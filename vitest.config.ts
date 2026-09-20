@@ -15,6 +15,11 @@ export default defineConfig({
   },
   test: {
     environment: "node",
-    include: ["packages/**/*.test.ts", "infra/**/*.test.ts", "apps/dashboard/src/**/*.test.ts"],
+    include: [
+      "packages/**/*.test.ts",
+      "infra/**/*.test.ts",
+      "apps/dashboard/src/**/*.test.ts",
+      "dashboard/src/**/*.test.ts",
+    ],
   },
 });

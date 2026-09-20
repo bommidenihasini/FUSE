@@ -1,4 +1,5 @@
 import type { Event, Policy, Run } from "@fuse/contracts";
+import type { BreakerTrippedPublisher } from "@fuse/enforcement";
 import type { FuseRepository } from "@fuse/persistence";
 import type { ScenarioId, SyntheticInvoice } from "@fuse/test-fixtures";
 
@@ -38,6 +39,7 @@ export interface InvoiceVerificationRunnerOptions {
    * Hard iteration cap. Clamped to HARD_RUNNER_SAFETY_CAP. Independent of policy.
    */
   safetyCap?: number;
+  publishBreakerTripped?: BreakerTrippedPublisher;
 }
 
 export type { ScenarioId };

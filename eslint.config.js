@@ -4,12 +4,11 @@ import tseslint from "typescript-eslint";
 export default tseslint.config(
   {
     ignores: [
-      "node_modules/**",
-      "dist/**",
-      "coverage/**",
-      "cdk.out/**",
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/coverage/**",
+      "**/cdk.out/**",
       "apps/runner/**",
-      "apps/dashboard/dist/**",
       "apps/dashboard/src/components/originkit/**",
       "dashboard/**",
       "packages/policy-engine/policy.js",

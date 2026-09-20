@@ -1,0 +1,133 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "LambdaFuseFunctions",
+      "Effect": "Allow",
+      "Action": [
+        "lambda:CreateFunction",
+        "lambda:UpdateFunctionCode",
+        "lambda:UpdateFunctionConfiguration",
+        "lambda:GetFunction",
+        "lambda:GetFunctionConfiguration",
+        "lambda:ListFunctions",
+        "lambda:ListTags",
+        "lambda:TagResource",
+        "lambda:UntagResource",
+        "lambda:AddPermission",
+        "lambda:RemovePermission",
+        "lambda:InvokeFunction",
+        "lambda:PublishVersion",
+        "lambda:GetPolicy"
+      ],
+      "Resource": [
+        "arn:aws:lambda:us-east-1:843447460827:function:FuseMvp-*",
+        "arn:aws:lambda:us-east-1:843447460827:function:FuseControlFn*",
+        "arn:aws:lambda:us-east-1:843447460827:function:FuseRunnerFn*"
+      ]
+    },
+    {
+      "Sid": "ApiGatewayHttpApi",
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:GET",
+        "apigateway:POST",
+        "apigateway:PUT",
+        "apigateway:PATCH",
+        "apigateway:DELETE"
+      ],
+      "Resource": [
+        "arn:aws:apigateway:us-east-1::/apis",
+        "arn:aws:apigateway:us-east-1::/apis/*",
+        "arn:aws:apigateway:us-east-1::/tags/*"
+      ]
+    },
+    {
+      "Sid": "DynamoDbFuseTables",
+      "Effect": "Allow",
+      "Action": [
+        "dynamodb:CreateTable",
+        "dynamodb:DescribeTable",
+        "dynamodb:DescribeTimeToLive",
+        "dynamodb:DescribeContinuousBackups",
+        "dynamodb:UpdateContinuousBackups",
+        "dynamodb:UpdateTable",
+        "dynamodb:ListTagsOfResource",
+        "dynamodb:TagResource",
+        "dynamodb:UntagResource",
+        "dynamodb:ListTables"
+      ],
+      "Resource": [
+        "arn:aws:dynamodb:us-east-1:843447460827:table/FuseMvp-*",
+        "arn:aws:dynamodb:us-east-1:843447460827:table/FuseRuns*",
+        "arn:aws:dynamodb:us-east-1:843447460827:table/FuseEvents*"
+      ]
+    },
+    {
+      "Sid": "EventBridgeFuseBus",
+      "Effect": "Allow",
+      "Action": [
+        "events:DescribeEventBus",
+        "events:CreateEventBus",
+        "events:PutPermission",
+        "events:ListTagsForResource",
+        "events:TagResource",
+        "events:UntagResource",
+        "events:PutRule",
+        "events:DescribeRule",
+        "events:PutTargets",
+        "events:ListTargetsByRule"
+      ],
+      "Resource": [
+        "arn:aws:events:us-east-1:843447460827:event-bus/fuse-breaker",
+        "arn:aws:events:us-east-1:843447460827:event-bus/FuseMvp-*",
+        "arn:aws:events:us-east-1:843447460827:rule/fuse-breaker/*",
+        "arn:aws:events:us-east-1:843447460827:rule/FuseMvp-*"
+      ]
+    },
+    {
+      "Sid": "CloudWatchLogsFuse",
+      "Effect": "Allow",
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutRetentionPolicy",
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams",
+        "logs:ListTagsLogGroup",
+        "logs:TagLogGroup",
+        "logs:UntagLogGroup",
+        "logs:PutResourcePolicy",
+        "logs:DescribeResourcePolicies"
+      ],
+      "Resource": [
+        "arn:aws:logs:us-east-1:843447460827:log-group:/aws/lambda/FuseMvp-*",
+        "arn:aws:logs:us-east-1:843447460827:log-group:/aws/lambda/FuseMvp-*:*",
+        "arn:aws:logs:us-east-1:843447460827:log-group:/aws/http-api/*",
+        "arn:aws:logs:us-east-1:843447460827:log-group:*Fuse*"
+      ]
+    },
+    {
+      "Sid": "CloudFrontDistribution",
+      "Effect": "Allow",
+      "Action": [
+        "cloudfront:CreateDistribution",
+        "cloudfront:GetDistribution",
+        "cloudfront:GetDistributionConfig",
+        "cloudfront:UpdateDistribution",
+        "cloudfront:TagResource",
+        "cloudfront:UntagResource",
+        "cloudfront:ListTagsForResource",
+        "cloudfront:CreateOriginAccessControl",
+        "cloudfront:GetOriginAccessControl",
+        "cloudfront:GetOriginAccessControlConfig",
+        "cloudfront:UpdateOriginAccessControl",
+        "cloudfront:ListOriginAccessControls",
+        "cloudfront:CreateInvalidation",
+        "cloudfront:GetInvalidation",
+        "cloudfront:ListInvalidations"
+      ],
+      "Resource": "*"
+    }
+  ]
+}

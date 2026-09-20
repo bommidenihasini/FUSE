@@ -1,0 +1,42 @@
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "AssumeCdkBootstrapRoles",
+      "Effect": "Allow",
+      "Action": "sts:AssumeRole",
+      "Resource": [
+        "arn:aws:iam::843447460827:role/cdk-hnb659fds-deploy-role-843447460827-us-east-1",
+        "arn:aws:iam::843447460827:role/cdk-hnb659fds-file-publishing-role-843447460827-us-east-1",
+        "arn:aws:iam::843447460827:role/cdk-hnb659fds-image-publishing-role-843447460827-us-east-1",
+        "arn:aws:iam::843447460827:role/cdk-hnb659fds-lookup-role-843447460827-us-east-1"
+      ]
+    },
+    {
+      "Sid": "ReadCdkBootstrapVersion",
+      "Effect": "Allow",
+      "Action": "ssm:GetParameter",
+      "Resource": "arn:aws:ssm:us-east-1:843447460827:parameter/cdk-bootstrap/hnb659fds/version"
+    },
+    {
+      "Sid": "CdkAssetBucket",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetObject",
+        "s3:GetObjectVersion",
+        "s3:PutObject",
+        "s3:AbortMultipartUpload",
+        "s3:ListBucket",
+        "s3:GetBucketLocation",
+        "s3:ListBucketMultipartUploads",
+        "s3:ListMultipartUploadParts"
+      ],
+      "Resource": [
+        "arn:aws:s3:::cdk-hnb659fds-assets-843447460827-us-east-1",
+        "arn:aws:s3:::cdk-hnb659fds-assets-843447460827-us-east-1/*",
+        "arn:aws:s3:::fusemvp-*",
+        "arn:aws:s3:::fusemvp-*/*"
+      ]
+    }
+  ]
+}

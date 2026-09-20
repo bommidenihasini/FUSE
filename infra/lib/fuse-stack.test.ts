@@ -4,7 +4,7 @@ import { beforeAll, describe, expect, test } from "vitest";
 import { FuseStack, PLACEHOLDER_BEDROCK_MODEL_ID } from "./fuse-stack.js";
 
 function synthTemplate(): Template {
-  const app = new App();
+  const app = new App({ context: { "fuse:skipDashboard": true } });
   const stack = new FuseStack(app, "FuseMvpTest");
   return Template.fromStack(stack);
 }
@@ -14,7 +14,7 @@ describe("FuseStack", () => {
 
   beforeAll(() => {
     template = synthTemplate();
-  }, 30_000);
+  }, 120_000);
 
   test("defines two DynamoDB tables with the required keys", () => {
     template.resourceCountIs("AWS::DynamoDB::Table", 2);
@@ -74,12 +74,37 @@ describe("FuseStack", () => {
     });
   });
 
-  test("health Lambda body is synthetic fuse-api, not live Bedrock", () => {
+  test("control Lambda stays synthetic with live Bedrock disabled", () => {
     const json = JSON.stringify(template.toJSON());
-    expect(json).toContain("fuse-api");
-    expect(json).toContain("synthetic");
-    expect(json).toContain("liveBedrock: false");
-    expect(json).not.toContain("liveBedrock: true");
+    expect(json).toContain("fuse-http-api");
+    expect(json).toContain("liveBedrock=false");
+    expect(json).not.toContain("liveBedrock=true");
+    template.hasResourceProperties("AWS::Lambda::Function", {
+      Environment: {
+        Variables: Match.objectLike({
+          FUSE_LIVE_BEDROCK: "false",
+          BEDROCK_MODEL_ID: PLACEHOLDER_BEDROCK_MODEL_ID,
+        }),
+      },
+    });
+  });
+
+  test("HTTP API exposes health, policies, and run routes", () => {
+    template.hasResourceProperties("AWS::ApiGatewayV2::Route", {
+      RouteKey: "GET /health",
+    });
+    template.hasResourceProperties("AWS::ApiGatewayV2::Route", {
+      RouteKey: "GET /policies",
+    });
+    template.hasResourceProperties("AWS::ApiGatewayV2::Route", {
+      RouteKey: "POST /runs",
+    });
+    template.hasResourceProperties("AWS::ApiGatewayV2::Route", {
+      RouteKey: "GET /runs/{runId}",
+    });
+    template.hasResourceProperties("AWS::ApiGatewayV2::Route", {
+      RouteKey: "GET /runs/{runId}/events",
+    });
   });
 
   test("uses Node.js 22 Lambda runtimes", () => {

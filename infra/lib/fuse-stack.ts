@@ -1,11 +1,19 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import * as cdk from "aws-cdk-lib";
 import * as apigwv2 from "aws-cdk-lib/aws-apigatewayv2";
 import { HttpLambdaIntegration } from "aws-cdk-lib/aws-apigatewayv2-integrations";
+import * as cloudfront from "aws-cdk-lib/aws-cloudfront";
+import * as origins from "aws-cdk-lib/aws-cloudfront-origins";
 import * as dynamodb from "aws-cdk-lib/aws-dynamodb";
 import * as events from "aws-cdk-lib/aws-events";
 import * as iam from "aws-cdk-lib/aws-iam";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import { NodejsFunction, OutputFormat } from "aws-cdk-lib/aws-lambda-nodejs";
 import * as logs from "aws-cdk-lib/aws-logs";
+import * as s3 from "aws-cdk-lib/aws-s3";
+import * as s3deploy from "aws-cdk-lib/aws-s3-deployment";
 import type { Construct } from "constructs";
 
 /** Placeholder until a human verifies Bedrock model access. Never a guessed ARN. */
@@ -13,21 +21,6 @@ export const PLACEHOLDER_BEDROCK_MODEL_ID = "<approved-model-id>";
 
 export const FUSE_EVENT_SOURCE = "fuse.breaker";
 export const FUSE_BREAKER_DETAIL_TYPE = "BreakerTripped";
-
-const CONTROL_HANDLER = `'use strict';
-exports.handler = async function () {
-  return {
-    statusCode: 200,
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({
-      ok: true,
-      service: 'fuse-api',
-      mode: 'synthetic',
-      liveBedrock: false
-    })
-  };
-};
-`;
 
 const RUNNER_HANDLER = `'use strict';
 exports.handler = async function () {
@@ -39,11 +32,22 @@ exports.handler = async function () {
       service: 'fuse-runner',
       implemented: false,
       liveBedrock: false,
-      message: 'Runner is not implemented. Bedrock invoke is not granted until a model ID is verified.'
+      message: 'Live Bedrock runner is not enabled. FUSE_LIVE_BEDROCK stays false until Converse is allowed.'
     })
   };
 };
 `;
+
+function findRepoRoot(start: string): string {
+  let dir = start;
+  for (let i = 0; i < 8; i += 1) {
+    if (existsSync(path.join(dir, "pnpm-workspace.yaml"))) {
+      return dir;
+    }
+    dir = path.resolve(dir, "..");
+  }
+  throw new Error("Cannot locate Fuse repo root from CDK stack");
+}
 
 export class FuseStack extends cdk.Stack {
   public readonly runsTable: dynamodb.Table;
@@ -55,11 +59,13 @@ export class FuseStack extends cdk.Stack {
     super(scope, id, {
       ...props,
       description:
-        "Fuse development stack (C1.4). RemovalPolicy.DESTROY is development-only. Do not deploy until region and credentials are verified.",
+        "Fuse synthetic demo stack. liveBedrock=false. RemovalPolicy.DESTROY is development-only.",
     });
 
+    const repoRoot = findRepoRoot(path.dirname(fileURLToPath(import.meta.url)));
+    const skipDashboard = this.node.tryGetContext("fuse:skipDashboard") === true;
+
     this.runsTable = new dynamodb.Table(this, "FuseRuns", {
-      tableName: undefined,
       partitionKey: { name: "runId", type: dynamodb.AttributeType.STRING },
       billingMode: dynamodb.BillingMode.PAY_PER_REQUEST,
       pointInTimeRecoverySpecification: { pointInTimeRecoveryEnabled: true },
@@ -97,7 +103,7 @@ export class FuseStack extends cdk.Stack {
     const runnerRole = new iam.Role(this, "FuseRunnerRole", {
       assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
       description:
-        "Runner Lambda. No administrator access. Bedrock invoke omitted until BEDROCK_MODEL_ID is verified.",
+        "Placeholder Bedrock runner. No administrator access. Bedrock invoke omitted until Converse is allowed.",
     });
     controlLogGroup.grantWrite(controlRole);
     runnerLogGroup.grantWrite(runnerRole);
@@ -113,23 +119,32 @@ export class FuseStack extends cdk.Stack {
       PUBLIC_DEMO_MODE: "true",
     };
 
-    const controlFn = new lambda.Function(this, "FuseControlFn", {
+    const controlFn = new NodejsFunction(this, "FuseControlFn", {
       runtime: lambda.Runtime.NODEJS_22_X,
-      handler: "index.handler",
-      code: lambda.Code.fromInline(CONTROL_HANDLER),
-      description: "Placeholder control-plane Lambda. Not a complete API.",
+      entry: path.join(repoRoot, "packages/api/src/lambda.ts"),
+      handler: "handler",
+      depsLockFilePath: path.join(repoRoot, "pnpm-lock.yaml"),
+      projectRoot: repoRoot,
+      description: "Synthetic Fuse HTTP API. liveBedrock=false. Not live Bedrock.",
       environment: sharedEnv,
       logGroup: controlLogGroup,
       role: controlRole,
-      timeout: cdk.Duration.seconds(10),
-      memorySize: 256,
+      timeout: cdk.Duration.seconds(29),
+      memorySize: 512,
+      bundling: {
+        format: OutputFormat.CJS,
+        minify: true,
+        sourceMap: true,
+        target: "node22",
+        forceDockerBundling: false,
+      },
     });
 
     const runnerFn = new lambda.Function(this, "FuseRunnerFn", {
       runtime: lambda.Runtime.NODEJS_22_X,
       handler: "index.handler",
       code: lambda.Code.fromInline(RUNNER_HANDLER),
-      description: "Placeholder runner Lambda. No Bedrock invoke until model ID is verified.",
+      description: "Placeholder runner Lambda. No Bedrock invoke until Converse is allowed.",
       environment: sharedEnv,
       logGroup: runnerLogGroup,
       role: runnerRole,
@@ -145,15 +160,47 @@ export class FuseStack extends cdk.Stack {
     this.eventsTable.grantReadWriteData(runnerFn);
     this.eventBus.grantPutEventsTo(runnerFn);
 
+    const controlIntegration = new HttpLambdaIntegration("ControlIntegration", controlFn);
+
     this.api = new apigwv2.HttpApi(this, "FuseHttpApi", {
       apiName: "fuse-http-api",
-      description:
-        "Fuse HTTP API. GET /health is wired. Full run API is @fuse/api (local, synthetic).",
+      description: "Fuse synthetic HTTP API. liveBedrock=false.",
+      corsPreflight: {
+        allowHeaders: ["content-type", "idempotency-key"],
+        allowMethods: [
+          apigwv2.CorsHttpMethod.GET,
+          apigwv2.CorsHttpMethod.POST,
+          apigwv2.CorsHttpMethod.OPTIONS,
+        ],
+        allowOrigins: ["*"],
+        maxAge: cdk.Duration.days(1),
+      },
     });
+
     this.api.addRoutes({
       path: "/health",
       methods: [apigwv2.HttpMethod.GET],
-      integration: new HttpLambdaIntegration("HealthIntegration", controlFn),
+      integration: controlIntegration,
+    });
+    this.api.addRoutes({
+      path: "/policies",
+      methods: [apigwv2.HttpMethod.GET],
+      integration: controlIntegration,
+    });
+    this.api.addRoutes({
+      path: "/runs",
+      methods: [apigwv2.HttpMethod.POST],
+      integration: controlIntegration,
+    });
+    this.api.addRoutes({
+      path: "/runs/{runId}",
+      methods: [apigwv2.HttpMethod.GET],
+      integration: controlIntegration,
+    });
+    this.api.addRoutes({
+      path: "/runs/{runId}/events",
+      methods: [apigwv2.HttpMethod.GET],
+      integration: controlIntegration,
     });
 
     new cdk.CfnOutput(this, "FuseRunsTableName", {
@@ -174,5 +221,72 @@ export class FuseStack extends cdk.Stack {
     new cdk.CfnOutput(this, "FuseStackName", {
       value: cdk.Aws.STACK_NAME,
     });
+
+    if (!skipDashboard) {
+      const dashboardDist = path.join(repoRoot, "apps/dashboard/dist");
+      if (!existsSync(path.join(dashboardDist, "index.html"))) {
+        throw new Error("Build the dashboard first: pnpm --filter @fuse/dashboard build");
+      }
+
+      const dashboardBucket = new s3.Bucket(this, "FuseDashboardBucket", {
+        blockPublicAccess: s3.BlockPublicAccess.BLOCK_ALL,
+        encryption: s3.BucketEncryption.S3_MANAGED,
+        enforceSSL: true,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
+        autoDeleteObjects: true,
+      });
+
+      const apiDomain = cdk.Fn.select(2, cdk.Fn.split("/", `${this.api.apiEndpoint}/`));
+      const apiOrigin = new origins.HttpOrigin(apiDomain, {
+        protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+      });
+      const apiBehavior: cloudfront.BehaviorOptions = {
+        origin: apiOrigin,
+        allowedMethods: cloudfront.AllowedMethods.ALLOW_ALL,
+        cachePolicy: cloudfront.CachePolicy.CACHING_DISABLED,
+        originRequestPolicy: cloudfront.OriginRequestPolicy.ALL_VIEWER_EXCEPT_HOST_HEADER,
+        viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.HTTPS_ONLY,
+      };
+
+      const distribution = new cloudfront.Distribution(this, "FuseDashboardDistribution", {
+        comment: "Fuse synthetic control room. liveBedrock=false.",
+        defaultRootObject: "index.html",
+        defaultBehavior: {
+          origin: origins.S3BucketOrigin.withOriginAccessControl(dashboardBucket),
+          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
+        },
+        additionalBehaviors: {
+          "/health": apiBehavior,
+          "/policies": apiBehavior,
+          "/runs": apiBehavior,
+          "/runs/*": apiBehavior,
+        },
+        errorResponses: [
+          {
+            httpStatus: 403,
+            responseHttpStatus: 200,
+            responsePagePath: "/index.html",
+            ttl: cdk.Duration.seconds(0),
+          },
+          {
+            httpStatus: 404,
+            responseHttpStatus: 200,
+            responsePagePath: "/index.html",
+            ttl: cdk.Duration.seconds(0),
+          },
+        ],
+      });
+
+      new s3deploy.BucketDeployment(this, "FuseDashboardDeploy", {
+        destinationBucket: dashboardBucket,
+        distribution,
+        distributionPaths: ["/*"],
+        sources: [s3deploy.Source.asset(dashboardDist)],
+      });
+
+      new cdk.CfnOutput(this, "FuseDashboardUrl", {
+        value: `https://${distribution.distributionDomainName}`,
+      });
+    }
   }
 }
